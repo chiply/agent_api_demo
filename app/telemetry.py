@@ -14,9 +14,12 @@ from __future__ import annotations
 import logging
 import os
 
-from opentelemetry import metrics, trace
+from opentelemetry import _logs, metrics, trace
+from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter
 from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 from opentelemetry.sdk.resources import Resource
@@ -51,5 +54,17 @@ def setup_telemetry() -> None:
     metric_reader = PeriodicExportingMetricReader(metric_exporter)
     meter_provider = MeterProvider(resource=resource, metric_readers=[metric_reader])
     metrics.set_meter_provider(meter_provider)
+
+    # --- Logs ---
+    log_exporter = OTLPLogExporter()  # reads OTEL_EXPORTER_OTLP_* env vars
+    logger_provider = LoggerProvider(resource=resource)
+    logger_provider.add_log_record_processor(BatchLogRecordProcessor(log_exporter))
+    _logs.set_logger_provider(logger_provider)
+
+    # Attach OTel handler to root logger so all Python logs are exported via OTLP
+    otel_handler = LoggingHandler(
+        level=logging.DEBUG, logger_provider=logger_provider
+    )
+    logging.getLogger().addHandler(otel_handler)
 
     logger.info("OpenTelemetry SDK initialised for service %s", service_name)

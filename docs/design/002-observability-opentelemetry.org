@@ -1,6 +1,6 @@
 #+TITLE: 002 - Observability with OpenTelemetry
 #+AUTHOR: Charlie Holland
-#+STATUS: Active
+#+STATUS: Complete
 #+CATEGORY: infra
 #+CREATED: [2026-03-08]
 #+LAST_MODIFIED: [2026-03-08]
@@ -131,9 +131,12 @@ local development to keep setup simple.
 :CATEGORY: tasks
 :END:
 
-** TODO [AAD-002-01] Add OTel dependencies and configure SDK               :p1:
+** DONE [AAD-002-01] Add OTel dependencies and configure SDK               :p1:
+CLOSED: [2026-03-08]
 :PROPERTIES:
 :EFFORT: M
+:COMPLETED_BY: ralph
+:COMPLETED_AT: [2026-03-08]
 :END:
 
 Add OpenTelemetry packages to pyproject.toml. Create =app/telemetry.py=
@@ -144,9 +147,12 @@ Packages: =opentelemetry-api=, =opentelemetry-sdk=,
 =opentelemetry-exporter-otlp-proto-http=,
 =opentelemetry-instrumentation-fastapi=.
 
-** TODO [AAD-002-02] Add structured JSON logging with trace correlation     :p1:
+** DONE [AAD-002-02] Add structured JSON logging with trace correlation     :p1:
+CLOSED: [2026-03-08]
 :PROPERTIES:
 :EFFORT: M
+:COMPLETED_BY: ralph
+:COMPLETED_AT: [2026-03-08]
 :END:
 
 Configure Python =logging= with a JSON formatter. Add
@@ -154,36 +160,48 @@ Configure Python =logging= with a JSON formatter. Add
 =span_id= into log records. Replace any =print()= statements with
 proper logger calls. Add request logging middleware.
 
-** TODO [AAD-002-03] Add Docker Compose for Grafana LGTM stack             :p1:
+** DONE [AAD-002-03] Add Docker Compose for Grafana LGTM stack             :p1:
+CLOSED: [2026-03-08]
 :PROPERTIES:
 :EFFORT: S
+:COMPLETED_BY: ralph
+:COMPLETED_AT: [2026-03-08]
 :END:
 
 Create =docker-compose.observability.yml= with =grafana/otel-lgtm=
 image. Expose Grafana on port 3000, OTLP on 4317/4318. Add
 =.env.example= entries for OTel environment variables.
 
-** TODO [AAD-002-04] Create Grafana dashboard JSON provisioning             :p2:
+** DONE [AAD-002-04] Create Grafana dashboard JSON provisioning             :p2:
+CLOSED: [2026-03-08]
 :PROPERTIES:
 :EFFORT: M
+:COMPLETED_BY: ralph
+:COMPLETED_AT: [2026-03-08]
 :END:
 
 Create =grafana/dashboards/api-overview.json= with panels for request
 rate, error rate, latency percentiles, and log/trace panels. Add
 Grafana provisioning config to auto-load the dashboard.
 
-** TODO [AAD-002-05] Add health check and readiness probe instrumentation   :p2:
+** DONE [AAD-002-05] Add health check and readiness probe instrumentation   :p2:
+CLOSED: [2026-03-08]
 :PROPERTIES:
 :EFFORT: S
+:COMPLETED_BY: ralph
+:COMPLETED_AT: [2026-03-08]
 :END:
 
 Ensure =/health= endpoint is traced but excluded from latency metrics
 (health checks skew p99). Add a readiness probe that verifies OTel
 collector connectivity.
 
-** TODO [AAD-002-06] Document observability setup in CLAUDE.md              :p2:
+** DONE [AAD-002-06] Document observability setup in CLAUDE.md              :p2:
+CLOSED: [2026-03-08]
 :PROPERTIES:
 :EFFORT: S
+:COMPLETED_BY: ralph
+:COMPLETED_AT: [2026-03-08]
 :END:
 
 Add section to CLAUDE.md covering: how to start the observability stack,

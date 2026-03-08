@@ -8,15 +8,6 @@ Active tasks checked out from design docs.
 ** Active
 # Queue tasks here with /task-queue or M-x backlog/task-queue
 
-*** WIP [Ralph] Design doc 002 - Observability with OpenTelemetry
-:PROPERTIES:
-:DESIGN: [[file:docs/design/002-observability-opentelemetry.org][002 Observability with OpenTelemetry]]
-:DELEGATED_TO: ralph
-:PRD_FILES: tasks/prd-observability-opentelemetry.json
-:END:
-
-Tasks from this design doc are being executed autonomously via Ralph.
-Track progress in tasks/prd-observability-opentelemetry.json and progress.txt.
 
 ** Blocked
 # Tasks waiting on external dependency

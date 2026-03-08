@@ -1,0 +1,226 @@
+#+TITLE: 002 - Observability with OpenTelemetry
+#+AUTHOR: Charlie Holland
+#+STATUS: Active
+#+CATEGORY: infra
+#+CREATED: [2026-03-08]
+#+LAST_MODIFIED: [2026-03-08]
+#+SETUPFILE: ../../org-setup.org
+
+* Summary
+
+Add structured observability to the API using OpenTelemetry (OTel) as the
+vendor-neutral standard. Emit logs, traces, and metrics via OTLP and
+visualize them in Grafana using the Grafana LGTM stack (Loki, Grafana,
+Tempo, Mimir/Prometheus).
+
+* Motivation
+
+The API currently has no structured logging, tracing, or metrics. As the
+service grows, we need:
+
+- **Structured logs** in a standard format for searchability and correlation
+- **Distributed traces** to understand request flow and latency
+- **Metrics** (request rate, error rate, latency percentiles) for dashboards and alerting
+- **Vendor neutrality** — OpenTelemetry is the CNCF standard, avoiding lock-in
+
+* Design
+
+** Architecture Overview
+
+#+begin_src
+FastAPI App
+  ├── OTel SDK (auto-instrumentation + manual spans)
+  ├── OTel Log Bridge (structured JSON logs → OTLP)
+  └── OTel Metrics (request counters, histograms)
+         │
+         ▼ OTLP (gRPC/HTTP)
+  OTel Collector (optional, or direct export)
+         │
+         ├──→ Loki (logs)
+         ├──→ Tempo (traces)
+         └──→ Mimir/Prometheus (metrics)
+                │
+                ▼
+            Grafana (dashboards, explore, alerting)
+#+end_src
+
+** OpenTelemetry Integration
+
+Use the OpenTelemetry Python SDK with auto-instrumentation for FastAPI:
+
+- =opentelemetry-api= and =opentelemetry-sdk= — core SDK
+- =opentelemetry-instrumentation-fastapi= — auto-instrument routes
+- =opentelemetry-instrumentation-httpx= — instrument outbound HTTP calls
+- =opentelemetry-instrumentation-sqlalchemy= — instrument DB queries (future)
+- =opentelemetry-exporter-otlp= — export via OTLP protocol
+
+** Structured Logging
+
+Use Python's =logging= module with a JSON formatter, bridged to OTel:
+
+- =opentelemetry-instrumentation-logging= — inject trace/span IDs into log records
+- Log format: JSON with fields =timestamp=, =level=, =message=, =trace_id=, =span_id=, =service.name=
+- Correlate logs with traces via shared =trace_id=
+
+Example log output:
+
+#+begin_src json
+{
+  "timestamp": "2026-03-08T12:00:00.000Z",
+  "level": "INFO",
+  "message": "GET /hello 200",
+  "trace_id": "abc123",
+  "span_id": "def456",
+  "service.name": "agent-api-demo",
+  "http.method": "GET",
+  "http.route": "/hello",
+  "http.status_code": 200,
+  "duration_ms": 2.3
+}
+#+end_src
+
+** Metrics
+
+Auto-instrumented metrics from FastAPI instrumentation:
+
+- =http.server.request.duration= — histogram of request latency
+- =http.server.active_requests= — gauge of in-flight requests
+
+Custom metrics as needed:
+
+- =api.requests.total= — counter by route and status code
+
+** Local Development Stack
+
+Use Docker Compose for the Grafana LGTM stack locally:
+
+- =grafana/otel-lgtm= — all-in-one container (Grafana + Loki + Tempo + Prometheus + OTel Collector)
+- App exports OTLP to =localhost:4317= (gRPC) or =localhost:4318= (HTTP)
+- Grafana UI at =localhost:3000=
+
+** Configuration
+
+Environment variables (following OTel conventions):
+
+- =OTEL_SERVICE_NAME=agent-api-demo=
+- =OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318=
+- =OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf=
+- =OTEL_LOG_LEVEL=info=
+
+** Grafana Dashboard
+
+Pre-configured dashboard with panels:
+
+- Request rate (requests/sec by route)
+- Error rate (4xx, 5xx by route)
+- Latency percentiles (p50, p95, p99)
+- Active requests gauge
+- Recent logs panel (Loki)
+- Trace search (Tempo)
+
+Export as JSON provisioning file in =grafana/dashboards/=.
+
+* Decision
+
+Use OpenTelemetry as the single observability framework. Export via OTLP
+to the Grafana LGTM stack. Use =grafana/otel-lgtm= all-in-one image for
+local development to keep setup simple.
+
+* Tasks
+:PROPERTIES:
+:CATEGORY: tasks
+:END:
+
+** TODO [AAD-002-01] Add OTel dependencies and configure SDK               :p1:
+:PROPERTIES:
+:EFFORT: M
+:END:
+
+Add OpenTelemetry packages to pyproject.toml. Create =app/telemetry.py=
+to initialize the OTel SDK with OTLP exporter, trace provider, and
+meter provider. Wire into FastAPI app startup.
+
+Packages: =opentelemetry-api=, =opentelemetry-sdk=,
+=opentelemetry-exporter-otlp-proto-http=,
+=opentelemetry-instrumentation-fastapi=.
+
+** TODO [AAD-002-02] Add structured JSON logging with trace correlation     :p1:
+:PROPERTIES:
+:EFFORT: M
+:END:
+
+Configure Python =logging= with a JSON formatter. Add
+=opentelemetry-instrumentation-logging= to inject =trace_id= and
+=span_id= into log records. Replace any =print()= statements with
+proper logger calls. Add request logging middleware.
+
+** TODO [AAD-002-03] Add Docker Compose for Grafana LGTM stack             :p1:
+:PROPERTIES:
+:EFFORT: S
+:END:
+
+Create =docker-compose.observability.yml= with =grafana/otel-lgtm=
+image. Expose Grafana on port 3000, OTLP on 4317/4318. Add
+=.env.example= entries for OTel environment variables.
+
+** TODO [AAD-002-04] Create Grafana dashboard JSON provisioning             :p2:
+:PROPERTIES:
+:EFFORT: M
+:END:
+
+Create =grafana/dashboards/api-overview.json= with panels for request
+rate, error rate, latency percentiles, and log/trace panels. Add
+Grafana provisioning config to auto-load the dashboard.
+
+** TODO [AAD-002-05] Add health check and readiness probe instrumentation   :p2:
+:PROPERTIES:
+:EFFORT: S
+:END:
+
+Ensure =/health= endpoint is traced but excluded from latency metrics
+(health checks skew p99). Add a readiness probe that verifies OTel
+collector connectivity.
+
+** TODO [AAD-002-06] Document observability setup in CLAUDE.md              :p2:
+:PROPERTIES:
+:EFFORT: S
+:END:
+
+Add section to CLAUDE.md covering: how to start the observability stack,
+OTel environment variables, how to view logs/traces/metrics in Grafana,
+and how to add custom spans/metrics.
+
+* Questions
+:PROPERTIES:
+:CATEGORY: questions
+:END:
+
+** DECIDED Direct OTLP export vs OTel Collector sidecar
+:PROPERTIES:
+:DECIDED: [2026-03-08]
+:END:
+
+Use OTel Collector sidecar. The app always exports to a local collector
+endpoint (=localhost:4318=). In local dev, =grafana/otel-lgtm= provides
+the collector. In production, a dedicated collector sidecar handles
+sampling, batching, and routing to backends. This keeps the app config
+identical across environments.
+
+** DECIDED SQLAlchemy instrumentation timing
+:PROPERTIES:
+:DECIDED: [2026-03-08]
+:END:
+
+Add =opentelemetry-instrumentation-sqlalchemy= now. It's trivial to
+include and will be ready when the database layer is wired up. No
+overhead when no DB queries are made.
+
+** DECIDED Log level configuration
+:PROPERTIES:
+:DECIDED: [2026-03-08]
+:END:
+
+Per-module log levels. Use a global default (=OTEL_LOG_LEVEL=) with
+optional per-module overrides via environment variable (e.g.,
+=LOG_LEVEL_app.routers=DEBUG=). Keeps noise down in production while
+allowing targeted debugging.

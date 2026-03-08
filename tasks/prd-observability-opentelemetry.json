@@ -1,0 +1,112 @@
+{
+  "project": "AAD",
+  "branchName": "ralph/observability-opentelemetry",
+  "description": "Add structured observability to the API using OpenTelemetry (OTel) as the vendor-neutral standard. Emit logs, traces, and metrics via OTLP and visualize them in Grafana using the Grafana LGTM stack (Loki, Grafana, Tempo, Mimir/Prometheus).",
+  "sourceDesignDoc": "docs/design/002-observability-opentelemetry.org",
+  "userStories": [
+    {
+      "id": "US-001",
+      "sourceTaskId": "AAD-002-01",
+      "title": "Add OTel dependencies and configure SDK",
+      "description": "As a developer, I want OpenTelemetry configured in the FastAPI app so that traces and metrics are collected automatically. Add OTel packages to pyproject.toml. Create app/telemetry.py to initialize the OTel SDK with OTLP exporter, trace provider, and meter provider. Wire into FastAPI app startup. Include opentelemetry-instrumentation-sqlalchemy per design decision.",
+      "acceptanceCriteria": [
+        "opentelemetry-api, opentelemetry-sdk, opentelemetry-exporter-otlp-proto-http, opentelemetry-instrumentation-fastapi, opentelemetry-instrumentation-httpx, opentelemetry-instrumentation-sqlalchemy are in pyproject.toml",
+        "app/telemetry.py exists and initializes TracerProvider, MeterProvider, and OTLP exporter",
+        "FastAPI auto-instrumentation is wired into app startup in app/main.py",
+        "OTel configuration reads from standard OTEL_* environment variables",
+        "Existing tests still pass (pytest -xvs)"
+      ],
+      "priority": 1,
+      "passes": false,
+      "humanReview": false,
+      "notes": "Effort: M. Include opentelemetry-instrumentation-sqlalchemy per design decision."
+    },
+    {
+      "id": "US-002",
+      "sourceTaskId": "AAD-002-02",
+      "title": "Add structured JSON logging with trace correlation",
+      "description": "As a developer, I want structured JSON logs with trace/span ID correlation so that logs can be searched and linked to traces in Grafana. Configure Python logging with a JSON formatter. Add opentelemetry-instrumentation-logging to inject trace_id and span_id. Support per-module log levels via environment variables.",
+      "acceptanceCriteria": [
+        "app/logging.py (or equivalent) configures JSON-formatted logging",
+        "Log output includes timestamp, level, message, trace_id, span_id, service.name fields",
+        "opentelemetry-instrumentation-logging is installed and configured",
+        "Per-module log level overrides work via LOG_LEVEL_<module>=<level> env vars",
+        "No print() statements remain in app code",
+        "Request logging middleware logs method, route, status code, and duration",
+        "Existing tests still pass (pytest -xvs)"
+      ],
+      "priority": 2,
+      "passes": false,
+      "humanReview": false,
+      "notes": "Effort: M. Per-module log levels per design decision."
+    },
+    {
+      "id": "US-003",
+      "sourceTaskId": "AAD-002-03",
+      "title": "Add Docker Compose for Grafana LGTM stack",
+      "description": "As a developer, I want a Docker Compose file that runs the Grafana LGTM stack locally so that I can view logs, traces, and metrics during development. Use the grafana/otel-lgtm all-in-one image.",
+      "acceptanceCriteria": [
+        "docker-compose.observability.yml exists with grafana/otel-lgtm service",
+        "Grafana is exposed on port 3000",
+        "OTLP endpoints exposed on ports 4317 (gRPC) and 4318 (HTTP)",
+        ".env.example includes all OTEL_* environment variables with sensible defaults",
+        "docker compose -f docker-compose.observability.yml up starts without errors"
+      ],
+      "priority": 3,
+      "passes": false,
+      "humanReview": false,
+      "notes": "Effort: S."
+    },
+    {
+      "id": "US-004",
+      "sourceTaskId": "AAD-002-04",
+      "title": "Create Grafana dashboard JSON provisioning",
+      "description": "As a developer, I want a pre-built Grafana dashboard so that I can immediately view request rate, error rate, latency percentiles, logs, and traces without manual setup.",
+      "acceptanceCriteria": [
+        "grafana/dashboards/api-overview.json exists with valid Grafana dashboard JSON",
+        "Dashboard includes panels: request rate by route, error rate (4xx/5xx), latency percentiles (p50/p95/p99), active requests gauge, recent logs (Loki), trace search (Tempo)",
+        "Grafana provisioning config auto-loads the dashboard on startup",
+        "docker-compose.observability.yml mounts the provisioning config"
+      ],
+      "priority": 4,
+      "passes": false,
+      "humanReview": false,
+      "notes": "Effort: M."
+    },
+    {
+      "id": "US-005",
+      "sourceTaskId": "AAD-002-05",
+      "title": "Add health check and readiness probe instrumentation",
+      "description": "As a developer, I want a /health endpoint that is traced but excluded from latency metrics so that health check traffic does not skew p99 numbers. Add a readiness probe that verifies OTel collector connectivity.",
+      "acceptanceCriteria": [
+        "/health endpoint exists and returns 200 with status JSON",
+        "/health is excluded from http.server.request.duration metrics",
+        "/health requests still generate traces (for debugging)",
+        "Readiness probe checks OTel collector connectivity",
+        "Tests cover /health endpoint behavior",
+        "Existing tests still pass (pytest -xvs)"
+      ],
+      "priority": 5,
+      "passes": false,
+      "humanReview": false,
+      "notes": "Effort: S."
+    },
+    {
+      "id": "US-006",
+      "sourceTaskId": "AAD-002-06",
+      "title": "Document observability setup in CLAUDE.md",
+      "description": "As a developer, I want CLAUDE.md to document the observability setup so that anyone can start the stack, view dashboards, and add custom instrumentation.",
+      "acceptanceCriteria": [
+        "CLAUDE.md has an Observability section",
+        "Documents how to start the Grafana LGTM stack (docker compose command)",
+        "Lists all OTEL_* environment variables and their purpose",
+        "Explains how to view logs, traces, and metrics in Grafana",
+        "Explains how to add custom spans and metrics in code"
+      ],
+      "priority": 6,
+      "passes": false,
+      "humanReview": true,
+      "notes": "Effort: S. Last in chain — human review checkpoint."
+    }
+  ]
+}

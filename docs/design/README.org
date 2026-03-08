@@ -43,6 +43,7 @@ this table to determine valid categories.
 |-----+----------+--------|
 | 000 | [[file:000-template.org][Template]] | N/A    |
 | 001 | [[file:001-hello-world-route.org][Hello World Route]] | Complete |
+| 002 | [[file:002-observability-opentelemetry.org][Observability with OpenTelemetry]] | Active |
 
 * Elisp Setup
 :PROPERTIES:

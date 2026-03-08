@@ -11,3 +11,9 @@ PRD: tasks/prd-observability-opentelemetry.json
 - FastAPI app in app/main.py, routers in app/routers/, schemas in app/schemas/
 - Existing route: GET /hello returning {"message": "Hello, world!"}
 ---
+
+## US-001 - Add OTel dependencies and configure SDK
+- What was implemented: Added 6 OTel packages to pyproject.toml. Created app/telemetry.py with setup_telemetry() initializing TracerProvider + MeterProvider with OTLP exporters. Wired into app/main.py with FastAPIInstrumentor. Tests use OTEL_SDK_DISABLED=true.
+- Files changed: pyproject.toml, app/telemetry.py (new), app/main.py, tests/conftest.py
+- Learnings: OTel SDK is resilient by default. Set OTEL_SDK_DISABLED=true in conftest.py before app import to suppress noise. setup_telemetry() called at module level in main.py.
+- Status: SUCCESS

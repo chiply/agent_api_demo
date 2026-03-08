@@ -17,9 +17,9 @@
         "Existing tests still pass (pytest -xvs)"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "humanReview": false,
-      "notes": "Effort: M. Include opentelemetry-instrumentation-sqlalchemy per design decision."
+      "notes": "Effort: M. Include opentelemetry-instrumentation-sqlalchemy per design decision. Completed."
     },
     {
       "id": "US-002",

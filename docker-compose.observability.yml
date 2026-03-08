@@ -7,6 +7,8 @@ services:
       - "4318:4318"   # OTLP HTTP
     volumes:
       - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
 
 volumes:
   grafana-data:

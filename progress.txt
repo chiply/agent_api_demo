@@ -1,0 +1,13 @@
+# Ralph Progress Log
+Started: 2026-03-08
+Tool: Claude Code (native subagent mode)
+PRD: tasks/prd-observability-opentelemetry.json
+
+## Codebase Patterns
+- Python 3.12 via homebrew at /opt/homebrew/opt/python@3.12/bin/python3.12
+- pytest-asyncio mode="auto" in pyproject.toml — no @pytest.mark.asyncio decorators needed
+- httpx.AsyncClient with ASGITransport for API tests
+- venv at .venv, activate with: source .venv/bin/activate
+- FastAPI app in app/main.py, routers in app/routers/, schemas in app/schemas/
+- Existing route: GET /hello returning {"message": "Hello, world!"}
+---

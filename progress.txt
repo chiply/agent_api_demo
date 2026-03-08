@@ -34,3 +34,8 @@ PRD: tasks/prd-observability-opentelemetry.json
 - Files changed: grafana/provisioning/dashboards/dashboards.yml (new), grafana/dashboards/api-overview.json (new), docker-compose.observability.yml (updated)
 - Learnings: grafana/otel-lgtm auto-configures datasource UIDs as prometheus, loki, tempo.
 - Status: SUCCESS
+
+## US-005 - Add health check and readiness probe instrumentation
+- What was implemented: GET /health (200 ok), GET /ready (checks collector), /health excluded from metrics via excluded_urls. Pydantic response models. Tests for both.
+- Files changed: app/routers/health.py (new), app/schemas/health.py (new), app/main.py, tests/test_health.py (new)
+- Status: SUCCESS

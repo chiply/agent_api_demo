@@ -1,6 +1,6 @@
 #+TITLE: 001 - Hello World Route
 #+AUTHOR: Charlie Holland
-#+STATUS: Active
+#+STATUS: Complete
 #+CATEGORY: feature
 #+CREATED: [2026-03-08]
 #+LAST_MODIFIED: [2026-03-08]
@@ -40,26 +40,35 @@ Add to =app/routers/hello.py= and register in =app/main.py=.
 
 Implementation tasks following TDD workflow.
 
-** TODO [AAD-001-01] Write failing test for GET /hello endpoint           :p1:
+** DONE [AAD-001-01] Write failing test for GET /hello endpoint           :p1:
+CLOSED: [2026-03-08]
 :PROPERTIES:
 :EFFORT: S
+:COMPLETED_BY: ralph
+:COMPLETED_AT: [2026-03-08]
 :END:
 
 Create =tests/test_hello.py= with a test that sends GET =/hello= and
 asserts 200 status with ={"message": "Hello, world!"}= response body.
 
-** TODO [AAD-001-02] Implement GET /hello route                           :p1:
+** DONE [AAD-001-02] Implement GET /hello route                           :p1:
+CLOSED: [2026-03-08]
 :PROPERTIES:
 :EFFORT: S
+:COMPLETED_BY: ralph
+:COMPLETED_AT: [2026-03-08]
 :END:
 
 Create =app/routers/hello.py= with a router defining GET =/hello=.
 Create =app/schemas/hello.py= with the response schema.
 Register the router in =app/main.py=.
 
-** TODO [AAD-001-03] Verify endpoint with curl against running server     :p1:
+** DONE [AAD-001-03] Verify endpoint with curl against running server     :p1:
+CLOSED: [2026-03-08]
 :PROPERTIES:
 :EFFORT: S
+:COMPLETED_BY: ralph
+:COMPLETED_AT: [2026-03-08]
 :END:
 
 Start the server and confirm =curl http://localhost:<PORT>/hello= returns

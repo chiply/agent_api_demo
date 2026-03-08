@@ -42,7 +42,7 @@ this table to determine valid categories.
 | Doc | Title    | Status |
 |-----+----------+--------|
 | 000 | [[file:000-template.org][Template]] | N/A    |
-| 001 | [[file:001-hello-world-route.org][Hello World Route]] | Active |
+| 001 | [[file:001-hello-world-route.org][Hello World Route]] | Complete |
 
 * Elisp Setup
 :PROPERTIES:

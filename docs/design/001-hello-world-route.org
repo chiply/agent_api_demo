@@ -1,0 +1,78 @@
+#+TITLE: 001 - Hello World Route
+#+AUTHOR: Charlie Holland
+#+STATUS: Active
+#+CATEGORY: feature
+#+CREATED: [2026-03-08]
+#+LAST_MODIFIED: [2026-03-08]
+#+SETUPFILE: ../../org-setup.org
+
+* Summary
+
+Add a simple "hello world" GET endpoint that returns a greeting message.
+This serves as the foundational route to verify the API is working end-to-end.
+
+* Motivation
+
+Every API needs a basic smoke-test endpoint beyond a health check. A hello
+world route provides a minimal, human-friendly response that confirms
+routing, serialization, and the request/response cycle are functioning.
+
+* Design
+
+A single GET endpoint at =/hello= that returns a JSON greeting.
+
+** Response Schema
+
+#+begin_src json
+{
+  "message": "Hello, world!"
+}
+#+end_src
+
+** Route Location
+
+Add to =app/routers/hello.py= and register in =app/main.py=.
+
+* Tasks
+:PROPERTIES:
+:CATEGORY: tasks
+:END:
+
+Implementation tasks following TDD workflow.
+
+** TODO [AAD-001-01] Write failing test for GET /hello endpoint           :p1:
+:PROPERTIES:
+:EFFORT: S
+:END:
+
+Create =tests/test_hello.py= with a test that sends GET =/hello= and
+asserts 200 status with ={"message": "Hello, world!"}= response body.
+
+** TODO [AAD-001-02] Implement GET /hello route                           :p1:
+:PROPERTIES:
+:EFFORT: S
+:END:
+
+Create =app/routers/hello.py= with a router defining GET =/hello=.
+Create =app/schemas/hello.py= with the response schema.
+Register the router in =app/main.py=.
+
+** TODO [AAD-001-03] Verify endpoint with curl against running server     :p1:
+:PROPERTIES:
+:EFFORT: S
+:END:
+
+Start the server and confirm =curl http://localhost:<PORT>/hello= returns
+the expected JSON response.
+
+* Questions
+:PROPERTIES:
+:CATEGORY: questions
+:END:
+
+** DECIDED Endpoint path
+:PROPERTIES:
+:DECIDED: [2026-03-08]
+:END:
+
+Use =/hello= as the path. Simple and conventional for a hello world route.

@@ -1,0 +1,55 @@
+{
+  "project": "AAD",
+  "branchName": "ralph/hello-world-route",
+  "description": "Add a simple \"hello world\" GET endpoint that returns a greeting message. This serves as the foundational route to verify the API is working end-to-end.",
+  "sourceDesignDoc": "docs/design/001-hello-world-route.org",
+  "userStories": [
+    {
+      "id": "US-001",
+      "sourceTaskId": "AAD-001-01",
+      "title": "Write failing test for GET /hello endpoint",
+      "description": "As a developer, I want a failing test for GET /hello so that I have a clear target for the implementation. Create tests/test_hello.py with a test that sends GET /hello and asserts 200 status with {\"message\": \"Hello, world!\"} response body.",
+      "acceptanceCriteria": [
+        "tests/test_hello.py exists with an async test for GET /hello",
+        "Test asserts response status code is 200",
+        "Test asserts response body is {\"message\": \"Hello, world!\"}",
+        "Test fails when run (no implementation yet)"
+      ],
+      "priority": 1,
+      "passes": false,
+      "humanReview": false,
+      "notes": "Effort: S. TDD red phase."
+    },
+    {
+      "id": "US-002",
+      "sourceTaskId": "AAD-001-02",
+      "title": "Implement GET /hello route",
+      "description": "As a developer, I want the GET /hello endpoint implemented so that the failing test passes. Create app/routers/hello.py with a router, app/schemas/hello.py with the response schema, and register the router in app/main.py.",
+      "acceptanceCriteria": [
+        "app/routers/hello.py exists with GET /hello route",
+        "app/schemas/hello.py exists with response schema",
+        "Router is registered in app/main.py",
+        "All tests pass (pytest -xvs)"
+      ],
+      "priority": 2,
+      "passes": false,
+      "humanReview": false,
+      "notes": "Effort: S. TDD green phase."
+    },
+    {
+      "id": "US-003",
+      "sourceTaskId": "AAD-001-03",
+      "title": "Verify endpoint with curl against running server",
+      "description": "As a developer, I want to verify the endpoint works against a live server. Start the server and confirm curl http://localhost:<PORT>/hello returns the expected JSON response.",
+      "acceptanceCriteria": [
+        "Server starts successfully with uvicorn",
+        "curl GET /hello returns 200 with {\"message\": \"Hello, world!\"}",
+        "Response Content-Type is application/json"
+      ],
+      "priority": 3,
+      "passes": false,
+      "humanReview": true,
+      "notes": "Effort: S. Final verification — last in dependency chain."
+    }
+  ]
+}

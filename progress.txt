@@ -1,0 +1,16 @@
+# Ralph Progress Log
+Started: 2026-03-08
+Tool: Claude Code (native subagent mode)
+PRD: tasks/prd-hello-world-route.json
+
+## Codebase Patterns
+- Python 3.12 via homebrew at /opt/homebrew/opt/python@3.12/bin/python3.12
+- pytest-asyncio mode="auto" in pyproject.toml — no @pytest.mark.asyncio decorators needed
+- httpx.AsyncClient with ASGITransport for API tests
+- venv at .venv, activate with: source .venv/bin/activate
+---
+
+## US-001 - Write failing test for GET /hello endpoint
+- What was implemented: Bootstrapped project with pyproject.toml, minimal FastAPI app (no routes), async test infrastructure, and failing test for GET /hello (returns 404 as expected).
+- Files changed: .gitignore, pyproject.toml, app/__init__.py, app/main.py, tests/__init__.py, tests/conftest.py, tests/test_hello.py
+- Status: SUCCESS

@@ -16,9 +16,9 @@
         "Test fails when run (no implementation yet)"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "humanReview": false,
-      "notes": "Effort: S. TDD red phase."
+      "notes": "Effort: S. TDD red phase. Completed — test fails with 404 as expected."
     },
     {
       "id": "US-002",

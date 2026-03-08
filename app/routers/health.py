@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import logging
 import os
+
+logger = logging.getLogger(__name__)
 
 import httpx
 from fastapi import APIRouter
@@ -35,11 +38,12 @@ async def get_ready() -> JSONResponse:
                 status_code=200,
                 content=ReadyResponse(status="ready").model_dump(exclude_none=True),
             )
-    except Exception as exc:
+    except Exception:
+        logger.exception("OTel collector health check failed")
         return JSONResponse(
             status_code=503,
             content=ReadyResponse(
                 status="not_ready",
-                reason=f"OTel collector unreachable: {exc}",
+                reason="OTel collector unreachable",
             ).model_dump(),
         )

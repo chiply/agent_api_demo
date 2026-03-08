@@ -90,7 +90,7 @@ This starts the `grafana/otel-lgtm` all-in-one container exposing Grafana on por
 |---|---|---|
 | `OTEL_SERVICE_NAME` | `agent-api-demo` | Service name attached to all telemetry |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:4318` | OTLP collector endpoint |
-| `OTEL_EXPORTER_OTLP_PROTOCOL` | `http/protobuf` | Export protocol (`http/protobuf` or `grpc`) |
+| `OTEL_EXPORTER_OTLP_PROTOCOL` | `http/protobuf` | Export protocol (only `http/protobuf` is supported) |
 | `OTEL_LOG_LEVEL` | `info` | OTel SDK internal log level |
 | `OTEL_SDK_DISABLED` | `false` | Set to `true` to disable the OTel SDK entirely |
 | `LOG_LEVEL` | `INFO` | Root Python log level |
@@ -105,7 +105,7 @@ Open [http://localhost:3000](http://localhost:3000) (no login required with the 
 - **Dashboards** — A pre-provisioned "API Overview" dashboard is available under Dashboards. It auto-loads from `grafana/dashboards/api-overview.json`.
 - **Logs** — Explore > Loki. JSON logs include `trace_id` and `span_id` fields for correlation.
 - **Traces** — Explore > Tempo. Search by service name or trace ID. Click a trace ID in a Loki log line to jump directly to the trace.
-- **Metrics** — Explore > Mimir/Prometheus. Query OTel metrics by name (e.g. `http_server_duration`).
+- **Metrics** — Explore > Mimir/Prometheus. Query OTel metrics by name (e.g. `http_server_request_duration_seconds_count`), or inspect the "API Overview" dashboard queries as the source of truth for metric names.
 
 ### Adding custom instrumentation
 

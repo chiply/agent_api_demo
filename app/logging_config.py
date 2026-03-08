@@ -66,7 +66,8 @@ def setup_logging() -> None:
         if key.startswith(prefix) and key != "LOG_LEVEL":
             module_name = key[len(prefix):]
             # Support both LOG_LEVEL_app.routers and LOG_LEVEL_app_routers
-            # but prefer dots (env vars with dots work in .env files)
+            if "." not in module_name:
+                module_name = module_name.replace("_", ".")
             level = value.upper()
             if hasattr(logging, level):
                 logging.getLogger(module_name).setLevel(getattr(logging, level))

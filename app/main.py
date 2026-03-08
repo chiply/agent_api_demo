@@ -15,4 +15,4 @@ app.include_router(hello_router)
 app.include_router(health_router)
 app.add_middleware(RequestLoggingMiddleware)
 
-FastAPIInstrumentor.instrument_app(app, excluded_urls="health,ready")
+FastAPIInstrumentor.instrument_app(app, excluded_urls="^/health$,^/ready$")

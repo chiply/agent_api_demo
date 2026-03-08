@@ -100,9 +100,9 @@ curl -s http://localhost:<PORT>/resource | python -m json.tool
 
 Always confirm the response status code and body match expectations before considering a feature complete.
 
-## Worktree Isolation
+## Worktree Isolation (Optional)
 
-This project uses **git worktrees** for parallel feature development. Each worktree must be fully isolated:
+Git worktrees are used for **parallel feature development** (e.g., Ralph subagents). For standard single-feature work, a regular feature branch is sufficient. When using worktrees, each must be fully isolated:
 
 - Each worktree gets its own **database** (e.g., `agent_api_dev`, `agent_api_feature_x`)
 - Each worktree runs its server on a **unique port** to avoid conflicts

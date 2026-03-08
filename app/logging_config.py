@@ -49,8 +49,13 @@ def setup_logging() -> None:
     root_logger = logging.getLogger()
     root_logger.setLevel(root_level)
 
-    # Remove existing handlers to avoid duplicate output
-    # but only StreamHandlers we'd be replacing
+    # Remove existing StreamHandlers to avoid duplicate output on repeated calls
+    for existing in root_logger.handlers[:]:
+        if isinstance(existing, logging.StreamHandler) and not isinstance(
+            existing, logging.FileHandler
+        ):
+            root_logger.removeHandler(existing)
+
     handler = logging.StreamHandler()
     handler.setFormatter(JSONFormatter(service_name=service_name))
     root_logger.addHandler(handler)

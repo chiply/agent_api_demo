@@ -70,6 +70,75 @@ Every feature or bugfix starts with a test. Do not write implementation code wit
 - Return appropriate HTTP status codes (201 for creation, 204 for deletion, etc.)
 - Use FastAPI dependency injection for database sessions
 
+## Observability
+
+The project uses OpenTelemetry for traces and metrics, structured JSON logging with trace correlation, and Grafana LGTM (Loki, Grafana, Tempo, Mimir) as the backend.
+
+Key files: `app/telemetry.py` (OTel SDK), `app/logging_config.py` (JSON logging), `app/middleware.py` (request logging), `docker-compose.observability.yml` (stack), `grafana/` (dashboards and provisioning).
+
+### Starting the stack
+
+```bash
+docker compose -f docker-compose.observability.yml up -d
+```
+
+This starts the `grafana/otel-lgtm` all-in-one container exposing Grafana on port 3000 and OTLP receivers on ports 4317 (gRPC) and 4318 (HTTP).
+
+### Environment variables
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `OTEL_SERVICE_NAME` | `agent-api-demo` | Service name attached to all telemetry |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:4318` | OTLP collector endpoint |
+| `OTEL_EXPORTER_OTLP_PROTOCOL` | `http/protobuf` | Export protocol (`http/protobuf` or `grpc`) |
+| `OTEL_LOG_LEVEL` | `info` | OTel SDK internal log level |
+| `OTEL_SDK_DISABLED` | `false` | Set to `true` to disable the OTel SDK entirely |
+| `LOG_LEVEL` | `INFO` | Root Python log level |
+| `LOG_LEVEL_<module>` | *(unset)* | Per-module log level override (e.g. `LOG_LEVEL_app.routers=DEBUG`) |
+
+All `OTEL_*` variables are defined in `.env.example`.
+
+### Viewing in Grafana
+
+Open [http://localhost:3000](http://localhost:3000) (no login required with the LGTM image).
+
+- **Dashboards** — A pre-provisioned "API Overview" dashboard is available under Dashboards. It auto-loads from `grafana/dashboards/api-overview.json`.
+- **Logs** — Explore > Loki. JSON logs include `trace_id` and `span_id` fields for correlation.
+- **Traces** — Explore > Tempo. Search by service name or trace ID. Click a trace ID in a Loki log line to jump directly to the trace.
+- **Metrics** — Explore > Mimir/Prometheus. Query OTel metrics by name (e.g. `http_server_duration`).
+
+### Adding custom instrumentation
+
+**Custom span:**
+
+```python
+from opentelemetry import trace
+
+tracer = trace.get_tracer(__name__)
+
+async def my_function():
+    with tracer.start_as_current_span("my-operation") as span:
+        span.set_attribute("key", "value")
+        # ... your code ...
+```
+
+**Custom metric:**
+
+```python
+from opentelemetry import metrics
+
+meter = metrics.get_meter(__name__)
+counter = meter.create_counter("my_counter", description="Counts things")
+
+def do_work():
+    counter.add(1, {"some.attribute": "value"})
+```
+
+### Health and readiness endpoints
+
+- `GET /health` — Returns `{"status": "ok"}`. Basic liveness check.
+- `GET /ready` — Checks connectivity to the OTLP collector. Returns 200 when the collector is reachable, 503 otherwise.
+
 ## Verification with curl
 
 After implementing any API endpoint, **always verify it works against a running instance** using curl.

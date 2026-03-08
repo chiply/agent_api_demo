@@ -104,9 +104,9 @@
         "Explains how to add custom spans and metrics in code"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "humanReview": true,
-      "notes": "Effort: S. Last in chain — human review checkpoint."
+      "notes": "Effort: S. Last in chain — human review checkpoint. Completed. Also fixed missing OTLP log exporter during review."
     }
   ]
 }

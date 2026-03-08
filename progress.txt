@@ -39,3 +39,8 @@ PRD: tasks/prd-observability-opentelemetry.json
 - What was implemented: GET /health (200 ok), GET /ready (checks collector), /health excluded from metrics via excluded_urls. Pydantic response models. Tests for both.
 - Files changed: app/routers/health.py (new), app/schemas/health.py (new), app/main.py, tests/test_health.py (new)
 - Status: SUCCESS
+
+## US-006 - Document observability setup in CLAUDE.md
+- What was implemented: Added Observability section to CLAUDE.md covering stack startup, env vars, Grafana usage, custom instrumentation, and health endpoints. Also fixed missing OTLP log exporter in app/telemetry.py (logs weren't reaching Loki).
+- Files changed: CLAUDE.md, app/telemetry.py
+- Status: SUCCESS (human reviewed)

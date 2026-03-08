@@ -23,3 +23,14 @@ PRD: tasks/prd-observability-opentelemetry.json
 - Files changed: app/logging_config.py (new), app/middleware.py (new), app/main.py, pyproject.toml, tests/test_logging.py (new), tests/test_middleware.py (new)
 - Learnings: OTel injects otelTraceID/otelSpanID on log records. setup_logging() must be called before setup_telemetry().
 - Status: SUCCESS
+
+## US-003 - Add Docker Compose for Grafana LGTM stack
+- What was implemented: docker-compose.observability.yml with grafana/otel-lgtm, .env.example with all OTEL_* vars.
+- Files changed: docker-compose.observability.yml (new), .env.example (new)
+- Status: SUCCESS
+
+## US-004 - Create Grafana dashboard JSON provisioning
+- What was implemented: Grafana dashboard with 6 panels (request rate, error rate, latency p50/p95/p99, active requests, logs, traces). Provisioning config and docker-compose volume mounts.
+- Files changed: grafana/provisioning/dashboards/dashboards.yml (new), grafana/dashboards/api-overview.json (new), docker-compose.observability.yml (updated)
+- Learnings: grafana/otel-lgtm auto-configures datasource UIDs as prometheus, loki, tempo.
+- Status: SUCCESS

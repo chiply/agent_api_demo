@@ -53,9 +53,9 @@
         "docker compose -f docker-compose.observability.yml up starts without errors"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "humanReview": false,
-      "notes": "Effort: S."
+      "notes": "Effort: S. Completed."
     },
     {
       "id": "US-004",
@@ -69,9 +69,9 @@
         "docker-compose.observability.yml mounts the provisioning config"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "humanReview": false,
-      "notes": "Effort: M."
+      "notes": "Effort: M. Completed."
     },
     {
       "id": "US-005",

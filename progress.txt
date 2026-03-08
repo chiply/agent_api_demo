@@ -14,8 +14,12 @@ PRD: tasks/prd-hello-world-route.json
 - What was implemented: Bootstrapped project with pyproject.toml, minimal FastAPI app (no routes), async test infrastructure, and failing test for GET /hello (returns 404 as expected).
 - Files changed: .gitignore, pyproject.toml, app/__init__.py, app/main.py, tests/__init__.py, tests/conftest.py, tests/test_hello.py
 - Status: SUCCESS
-
 ## US-002 - Implement GET /hello route
 - What was implemented: GET /hello endpoint returning {"message": "Hello, world!"} with Pydantic response schema and FastAPI router, registered in main app.
 - Files changed: app/main.py (updated), app/routers/__init__.py, app/routers/hello.py, app/schemas/__init__.py, app/schemas/hello.py
 - Status: SUCCESS
+
+## US-003 - Verify endpoint with curl against running server
+- What was implemented: Verification only — started server on port 8099, confirmed GET /hello returns 200 with correct JSON and Content-Type.
+- Files changed: none
+- Status: SUCCESS (human reviewed)

@@ -1,0 +1,46 @@
+# Ralph Progress Log
+Started: 2026-03-08
+Tool: Claude Code (native subagent mode)
+PRD: tasks/prd-observability-opentelemetry.json
+
+## Codebase Patterns
+- Python 3.12 via homebrew at /opt/homebrew/opt/python@3.12/bin/python3.12
+- pytest-asyncio mode="auto" in pyproject.toml — no @pytest.mark.asyncio decorators needed
+- httpx.AsyncClient with ASGITransport for API tests
+- venv at .venv, activate with: source .venv/bin/activate
+- FastAPI app in app/main.py, routers in app/routers/, schemas in app/schemas/
+- Existing route: GET /hello returning {"message": "Hello, world!"}
+---
+
+## US-001 - Add OTel dependencies and configure SDK
+- What was implemented: Added 6 OTel packages to pyproject.toml. Created app/telemetry.py with setup_telemetry() initializing TracerProvider + MeterProvider with OTLP exporters. Wired into app/main.py with FastAPIInstrumentor. Tests use OTEL_SDK_DISABLED=true.
+- Files changed: pyproject.toml, app/telemetry.py (new), app/main.py, tests/conftest.py
+- Learnings: OTel SDK is resilient by default. Set OTEL_SDK_DISABLED=true in conftest.py before app import to suppress noise. setup_telemetry() called at module level in main.py.
+- Status: SUCCESS
+
+## US-002 - Add structured JSON logging with trace correlation
+- What was implemented: Custom JSONFormatter in app/logging_config.py, RequestLoggingMiddleware in app/middleware.py, OTel logging instrumentation, per-module LOG_LEVEL_ env var support. 7 new tests.
+- Files changed: app/logging_config.py (new), app/middleware.py (new), app/main.py, pyproject.toml, tests/test_logging.py (new), tests/test_middleware.py (new)
+- Learnings: OTel injects otelTraceID/otelSpanID on log records. setup_logging() must be called before setup_telemetry().
+- Status: SUCCESS
+
+## US-003 - Add Docker Compose for Grafana LGTM stack
+- What was implemented: docker-compose.observability.yml with grafana/otel-lgtm, .env.example with all OTEL_* vars.
+- Files changed: docker-compose.observability.yml (new), .env.example (new)
+- Status: SUCCESS
+
+## US-004 - Create Grafana dashboard JSON provisioning
+- What was implemented: Grafana dashboard with 6 panels (request rate, error rate, latency p50/p95/p99, active requests, logs, traces). Provisioning config and docker-compose volume mounts.
+- Files changed: grafana/provisioning/dashboards/dashboards.yml (new), grafana/dashboards/api-overview.json (new), docker-compose.observability.yml (updated)
+- Learnings: grafana/otel-lgtm auto-configures datasource UIDs as prometheus, loki, tempo.
+- Status: SUCCESS
+
+## US-005 - Add health check and readiness probe instrumentation
+- What was implemented: GET /health (200 ok), GET /ready (checks collector), /health excluded from metrics via excluded_urls. Pydantic response models. Tests for both.
+- Files changed: app/routers/health.py (new), app/schemas/health.py (new), app/main.py, tests/test_health.py (new)
+- Status: SUCCESS
+
+## US-006 - Document observability setup in CLAUDE.md
+- What was implemented: Added Observability section to CLAUDE.md covering stack startup, env vars, Grafana usage, custom instrumentation, and health endpoints. Also fixed missing OTLP log exporter in app/telemetry.py (logs weren't reaching Loki).
+- Files changed: CLAUDE.md, app/telemetry.py
+- Status: SUCCESS (human reviewed)

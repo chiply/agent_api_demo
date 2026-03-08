@@ -1,7 +1,12 @@
-import pytest
-from httpx import ASGITransport, AsyncClient
+import os
 
-from app.main import app
+# Disable OTel SDK during tests to avoid connection-refused noise
+os.environ.setdefault("OTEL_SDK_DISABLED", "true")
+
+import pytest  # noqa: E402
+from httpx import ASGITransport, AsyncClient  # noqa: E402
+
+from app.main import app  # noqa: E402
 
 
 @pytest.fixture

@@ -126,15 +126,48 @@ This project supports autonomous story execution via `/ralph`. When running as a
 
 Design documents live in `docs/design/` using org-mode format (dev-agent-backlog convention). Convert to Ralph prd.json files with `/design-to-prd`. After Ralph completes, run `/reconcile-ralph` to sync results back to the design doc.
 
+## CI/CD
+
+### GitHub Actions
+
+- **test.yml** — Runs `pytest -xvs` on every push/PR to `main`
+- **release-please.yml** — Automates version bumps and changelog generation
+
+### Branch Protection (`main`)
+
+- Direct pushes blocked (admin bypass available)
+- PRs require 1 approving review, conversation resolution, and `test` status check
+- Force pushes and branch deletion are blocked
+
+### Commit Messages
+
+Use [Conventional Commits](https://www.conventionalcommits.org/) — release-please uses these to determine version bumps and generate changelogs:
+
+- `feat:` — new feature (minor version bump)
+- `fix:` — bug fix (patch version bump)
+- `chore:` — maintenance (no version bump)
+- `ci:` — CI changes (no version bump)
+- `docs:` — documentation (no version bump)
+- `refactor:` — refactoring (no version bump)
+- `test:` — test changes (no version bump)
+- Add `!` after the type for breaking changes: `feat!:` (major version bump)
+
+### Release Process
+
+1. Merge PRs to `main` with conventional commit messages
+2. release-please automatically creates/updates a release PR
+3. Merging the release PR creates a GitHub release and tags the version
+
 ## Workflow
 
-1. Create/switch to a feature branch in a worktree
+1. Create/switch to a feature branch
 2. Write a failing test
 3. Implement until the test passes
 4. Run the full test suite: `pytest -xvs`
 5. Start the server and verify with curl
 6. Run `/review-loop` to get automated code review feedback and iterate until clean
-7. Commit
+7. Commit with conventional commit message
+8. Push and open a PR to `main`
 
 ## Environment Setup
 
